@@ -1,4 +1,5 @@
-import os,time
+import time
+from ui import showScreen
 from enum import Enum
 
 # GAME VARIABLES
@@ -19,13 +20,13 @@ def main():
     global gameRunning
     match(decision.lower()):
         case 'x':
-            _showScreen("ui/user-ended-program.txt")
+            showScreen("ui/user-ended-program.txt")
         case 's':
             gameRunning=True
             runGame()
 
 def startGame():
-    _showScreen("ui/start.txt")
+    showScreen("ui/start.txt")
     user_input = input("Please enter 's' or 'x': ")
     while(user_input.lower()!='s' and user_input.lower()!='x'):
         user_input=input ('invalid input type either "s" or x: ')
@@ -39,30 +40,15 @@ def runGame():
         time.sleep(interval_secs)
         update()
 
-
-
 def endGame():
-    _showScreen("ui/end.txt")
+    showScreen("ui/end.txt")
     user_input = input("Please enter 's' or 'x': ")
     while(user_input.lower()!='s' and user_input.lower()!='x'):
         user_input=input ('invalid input type either "s" or x: ')
 
-def _showScreen(screenFilePath):
-    __clear_console()
-    with open(screenFilePath, "r") as file:
-        content = file.read()
-    print(content)
 
-def __clear_console():
-    """Clears the console screen based on the operating system."""
-    if os.name == 'nt':  # For Windows
-        os.system('cls')
-    else:  # For Unix-like systems (Linux, macOS)
-        os.system('clear')
 i=0
 def update():
-    global i
-    print(f"game runnin {i}")
-    i=i+1
+    print(f"game runnin {i} current snake direction is {directions}")
 
 main()
