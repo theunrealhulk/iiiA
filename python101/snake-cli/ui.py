@@ -1,5 +1,18 @@
 import os
 import sys
+from utils import empty_file
+
+
+def showToScreenText(screenFilePath):
+    empty_file()  # This clears screen.txt (assuming that's what it does)
+    
+    with open(screenFilePath, "r", encoding="utf-8") as file:
+        content = file.read()
+    
+    # Fixed: added 'with' here!
+    with open("screen.txt", "w", encoding="utf-8") as f:
+        f.write(content)
+    
 
 def showScreen(screenFilePath):
     clear_console()

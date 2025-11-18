@@ -1,6 +1,6 @@
 
 import time
-from ui import showScreen
+from ui import showToScreenText
 import game_state 
 from input_handler import start_input_thread
 
@@ -10,7 +10,7 @@ from input_handler import start_input_thread
 def main():
     choice = startGame()
     if choice == 'x':
-        showScreen("ui/user-ended-program.txt")
+        showToScreenText("ui/user-ended-program.txt")
         return
     game_state.gameRunning = True
     start_input_thread()
@@ -18,7 +18,7 @@ def main():
 
 
 def startGame():
-    showScreen("ui/start.txt")
+    showToScreenText("ui/start.txt")
     user_input = input("Please enter 's' or 'x': ")
     while(user_input.lower()!='s' and user_input.lower()!='x'):
         user_input=input ('invalid input type either "s" or x: ')
@@ -32,7 +32,7 @@ def runGame():
         update()
 
 def endGame():
-    showScreen("ui/end.txt")
+    showToScreenText("ui/end.txt")
     user_input = input("Please enter 's' or 'x': ")
     while(user_input.lower()!='s' and user_input.lower()!='x'):
         user_input=input ('invalid input type either "s" or x: ')

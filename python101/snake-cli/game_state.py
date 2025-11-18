@@ -1,5 +1,5 @@
 from enum import Enum
-from ui import clear_console
+from utils import clear_console, empty_file
 import threading # Assuming this is used elsewhere as indicated by your lock
 
 class Block(Enum):
@@ -88,7 +88,7 @@ def empty_file(filename):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def save_board_to_file(filename="snake_game_log.txt"):
+def save_board_to_file(filename="screen.txt"):
     empty_file(filename)
     """
     Saves the current game board as text to a file.
@@ -96,9 +96,6 @@ def save_board_to_file(filename="snake_game_log.txt"):
     """
     from datetime import datetime
     # Put this ONCE when your game starts (before the loop)
-    with open("current_frame.txt", "w", encoding="utf-8") as f:
-        pass  # File is now completely empty!
-    
     with open(filename, "a", encoding="utf-8") as f:  # 'a' = append
         # Optional: add timestamp/frame separator
         f.write(f"\n--- Frame at {datetime.now().strftime('%H:%M:%S.%f')[:-3]} ---\n")
