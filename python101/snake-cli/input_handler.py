@@ -3,46 +3,76 @@ import game_state
 
 def getch():
     """
-    Read a single keypress from the user without requiring Enter.
-    Works on Windows, Linux, and macOS.
-    Returns the character as a string (e.g., 'w', '\x1b' for Escape, etc.).
+    Returns a single key press.
+    - Normal keys: 'a', 'x', etc.
+    - Arrow keys: 'UP', 'DOWN', 'LEFT', 'RIGHT'
     """
-    if sys.platform.startswith('win'):
-        # Windows
-        import msvcrt
-        key = msvcrt.getch()
-        # msvcrt.getch() returns bytes; decode special keys properly
-        if key in (b'\xe0', b'\x00'):  # Special keys (arrows, etc.)
-            key = msvcrt.getch()       # Get the actual key code
-        return key.decode('utf-8', errors='ignore')
+    if sys.platform.startswith("win"):
+        return getch_windows()
+
+    # Linux/macOS
+    import tty, termios
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
     
-    else:
-        # Linux and macOS
-        import tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(fd)
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
+    try:
+        tty.setraw(fd)
+        ch1 = sys.stdin.read(1)
+
+        if ch1 == '\x1b':  # ESC
+            ch2 = sys.stdin.read(1)
+            if ch2 == '[':
+                ch3 = sys.stdin.read(1)
+                arrows = {
+                    'A': 'UP',
+                    'B': 'DOWN',
+                    'C': 'RIGHT',
+                    'D': 'LEFT'
+                }
+                return arrows.get(ch3, None)
+        return ch1
+
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+def getch_windows():
+    import msvcrt
+    ch = msvcrt.getch()
+
+    # Arrow keys come as:  b'\xe0' THEN another byte
+    if ch in [b'\x00', b'\xe0']:
+        ch2 = msvcrt.getch()
+        arrows = {
+            b'H': 'UP',
+            b'P': 'DOWN',
+            b'M': 'RIGHT',
+            b'K': 'LEFT',
+        }
+        return arrows.get(ch2, None)
+
+    return ch.decode("utf-8", errors="ignore")
 
 def input_listener():
-    """Listens for user input without blocking."""
     while game_state.gameRunning:
-        ch = getch()
+        key = getch()
+
         with game_state.direction_lock:
-            if ch in ['w', 'W']:
+
+            if key == 'UP' and game_state.current_direction != game_state.Direction.DOWN:
                 game_state.current_direction = game_state.Direction.UP
-            elif ch in ['s', 'S']:
+
+            elif key == 'DOWN' and game_state.current_direction != game_state.Direction.UP:
                 game_state.current_direction = game_state.Direction.DOWN
-            elif ch in ['a', 'A']:
+
+            elif key == 'LEFT' and game_state.current_direction != game_state.Direction.RIGHT:
                 game_state.current_direction = game_state.Direction.LEFT
-            elif ch in ['d', 'D']:
+
+            elif key == 'RIGHT' and game_state.current_direction != game_state.Direction.LEFT:
                 game_state.current_direction = game_state.Direction.RIGHT
-            elif ch.lower() == 'x': #to exit hgame while it's running 
+
+            elif key == 'x':
                 game_state.gameRunning = False
+
 
 def start_input_thread():
     """Starts input listener in a background thread."""
