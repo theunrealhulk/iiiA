@@ -51,6 +51,45 @@ board[10][3] = Block.PTAIL
 board[10][4] = Block.PTAIL
 board[10][5] = Block.PHEAD
 
+#initial snake position
+snakeTrack =[
+    [Direction.RIGHT,(10,5)],
+    [Direction.RIGHT,(10,4)],
+    [Direction.RIGHT,(10,3)]
+]
+
+def MoveSnake(d:Direction):
+    pass
+
+def refreshSnakeOnBoard():
+    hrow=snakeTrack[0][0]
+    hcol=snakeTrack[0][1]
+    board[hrow][hcol]=Block.PHEAD
+    for st in snakeTrack[1:]:
+        row=st[1][0]
+        col=st[1][1]
+        board[row][col] =Block.PTAIL
+        
+def getBlockChar(b:Block,d:Direction):
+    char=""
+    match b:
+        case Block.EMPTY:
+            char = ' '
+        case Block.WALL:
+            char = '▓'
+        case Block.FOOD:
+            char = '*'
+        case Block.PHEAD:
+            match d:
+                case Direction.UP: char = '▲'
+                case Direction.DOWN: char = '▼'
+                case Direction.LEFT: char = '◀'
+                case Direction.RIGHT: char = '▶'
+        case Block.PTAIL:
+              char = '|' if d in [Direction.UP, Direction.DOWN] else '-'
+
+    return char
+
 
 def drawBoard():
     clear_console()
@@ -106,24 +145,7 @@ def save_board_to_file(filename="screen.txt"):
             row_str = ""
             for col in range(BOARD_WIDTH):
                 block_type = board[row][col]
-                match block_type:
-                    case Block.EMPTY:
-                        char = ' '
-                    case Block.WALL:
-                        char = '▓'
-                    case Block.FOOD:
-                        char = '*'
-                    case Block.PHEAD:
-                        match current_direction:
-                            case Direction.UP: char = '▲'
-                            case Direction.DOWN: char = '▼'
-                            case Direction.LEFT: char = '◀'
-                            case Direction.RIGHT: char = '▶'
-                            case _: char = '?'
-                    case Block.PTAIL:
-                        char = '|' if current_direction in [Direction.UP, Direction.DOWN] else '-'
-                    case _:
-                        char = '?'
+                char=getBlockChar(block_type,current_direction)
                 row_str += char
             f.write(row_str + "\n")
         

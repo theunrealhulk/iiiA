@@ -26,8 +26,8 @@ def startGame():
 
 
 def runGame():
-    print(f"Game started! {game_state.gameRunning}")   # FIXED
-    while game_state.gameRunning:                      # FIXED
+    print(f"Game started! {game_state.gameRunning}")   
+    while game_state.gameRunning:                      
         time.sleep(game_state.interval_secs)
         update()
 
