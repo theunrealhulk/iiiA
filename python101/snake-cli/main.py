@@ -41,7 +41,7 @@ def endGame():
 def update():
     with game_state.direction_lock:
         dir_now = game_state.current_direction
-    print(f"Game tick... direction = {dir_now.name}")
+    game_state.save_board_to_file()
 
 if __name__ == "__main__":
     main()

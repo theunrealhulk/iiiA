@@ -1,4 +1,5 @@
 import os
+import sys
 
 def showScreen(screenFilePath):
     clear_console()
@@ -7,8 +8,16 @@ def showScreen(screenFilePath):
     print(content)
 
 def clear_console():
-    """Clears the console screen based on the operating system."""
-    if os.name == 'nt':  # For Windows
+    """Clears the console screen using ANSI escape codes for speed."""
+    # Move cursor to home position (top-left)
+    #sys.stdout.write('\033[H')
+    # Clear the screen from the cursor down
+    #sys.stdout.write('\033[J')
+    # Ensure the changes are rendered immediately
+    #sys.stdout.flush()
+
+    # Optional: Keep the os.system fallback if ANSI codes don't work on a very specific terminal setup
+    if os.name == 'nt':
         os.system('cls')
-    else:  # For Unix-like systems (Linux, macOS)
+    else:
         os.system('clear')
