@@ -1,29 +1,21 @@
+
 import time
 from ui import showScreen
-from enum import Enum
+import game_state 
+from input_handler import start_input_thread
 
-# GAME VARIABLES
-gameRunning:bool=False
-initialSnakeSize:int=2
-speed:float=5.0
-interval_secs:float=.461
-class Direction(Enum):
-    UP = 1
-    DOWN = 2
-    LEFT = 3
-    RIGHT= 4
 
-directions:Direction = [Direction.RIGHT]
+
 
 def main():
-    decision = startGame()
-    global gameRunning
-    match(decision.lower()):
-        case 'x':
-            showScreen("ui/user-ended-program.txt")
-        case 's':
-            gameRunning=True
-            runGame()
+    choice = startGame()
+    if choice == 'x':
+        showScreen("ui/user-ended-program.txt")
+        return
+    game_state.gameRunning = True
+    start_input_thread()
+    runGame()
+
 
 def startGame():
     showScreen("ui/start.txt")
@@ -34,10 +26,9 @@ def startGame():
 
 
 def runGame():
-    global interval_secs
-    print(f"starting game {gameRunning}")
-    while(gameRunning):
-        time.sleep(interval_secs)
+    print(f"Game started! {game_state.gameRunning}")   # FIXED
+    while game_state.gameRunning:                      # FIXED
+        time.sleep(game_state.interval_secs)
         update()
 
 def endGame():
@@ -47,8 +38,10 @@ def endGame():
         user_input=input ('invalid input type either "s" or x: ')
 
 
-i=0
 def update():
-    print(f"game runnin {i} current snake direction is {directions}")
+    with game_state.direction_lock:
+        dir_now = game_state.current_direction
+    print(f"Game tick... direction = {dir_now.name}")
 
-main()
+if __name__ == "__main__":
+    main()
