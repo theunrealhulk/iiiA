@@ -42,6 +42,14 @@ def update():
     with game_state.direction_lock:
         dir_now = game_state.current_direction
     game_state.save_board_to_file()
+    checkifGameEnded()
+
+def checkifGameEnded():
+    if not game_state.gameRunning:
+        if game_state.isGomeLost:
+            showToScreenText("ui/end.txt")
+        elif game_state.isGameEnded:
+            showToScreenText("ui/user-ended-program.txt")
 
 if __name__ == "__main__":
     main()

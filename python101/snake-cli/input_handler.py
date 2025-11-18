@@ -72,6 +72,7 @@ def input_listener():
 
             elif key == 'x':
                 game_state.gameRunning = False
+                game_state.isGameEnded=True
 
 
 def start_input_thread():

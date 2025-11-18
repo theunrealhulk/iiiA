@@ -19,6 +19,8 @@ class Direction(Enum):
 gameRunning: bool = False
 interval_secs: float = 0.3
 current_direction: Direction = Direction.RIGHT
+isGomeLost:bool = False
+isGameEnded:bool = False
 
 # Lock for thread-safe access
 direction_lock = threading.Lock()
