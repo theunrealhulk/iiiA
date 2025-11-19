@@ -58,17 +58,45 @@ snakeTrack =[
     [Direction.RIGHT,(10,3)]
 ]
 
-def MoveSnake(d:Direction):
-    pass
 
-def refreshSnakeOnBoard():
-    hrow=snakeTrack[0][0]
-    hcol=snakeTrack[0][1]
-    board[hrow][hcol]=Block.PHEAD
-    for st in snakeTrack[1:]:
-        row=st[1][0]
-        col=st[1][1]
-        board[row][col] =Block.PTAIL
+def MoveSnake():
+    global snakeTrack
+
+    # 0. CLEAR old snake from board BEFORE updating positions
+    for _, (row, col) in snakeTrack:
+        if board[row][col] in (Block.PTAIL, Block.PHEAD):
+            board[row][col] = Block.EMPTY
+
+    # 1. Get current head position
+    head_dir, (head_row, head_col) = snakeTrack[0]
+
+    # 2. Calculate new head position
+    new_row, new_col = head_row, head_col
+    match current_direction:
+        case Direction.UP:    new_row -= 1
+        case Direction.DOWN:  new_row += 1
+        case Direction.LEFT:  new_col -= 1
+        case Direction.RIGHT: new_col += 1
+
+    if board[new_row][new_col]==Block.WALL or board[new_row][new_col]==Block.PTAIL:
+        global gameRunning,isGomeLost
+        gameRunning=False
+        isGomeLost=True
+
+    # 3. Insert new head
+    snakeTrack.insert(0, [current_direction, (new_row, new_col)])
+
+    # 4. Remove tail (unless eating later)
+    snakeTrack.pop()
+
+    # 5. DRAW the updated snake
+    for i, (_, (row, col)) in enumerate(snakeTrack):
+        if i == 0:
+            board[row][col] = Block.PHEAD
+        else:
+            board[row][col] = Block.PTAIL
+    
+
         
 def getBlockChar(b:Block,d:Direction):
     char=""
@@ -78,15 +106,19 @@ def getBlockChar(b:Block,d:Direction):
         case Block.WALL:
             char = '▓'
         case Block.FOOD:
-            char = '*'
+            char = '*' #🐁🐀🦎🐇🐦🐿️
         case Block.PHEAD:
             match d:
-                case Direction.UP: char = '▲'
-                case Direction.DOWN: char = '▼'
-                case Direction.LEFT: char = '◀'
-                case Direction.RIGHT: char = '▶'
+                case Direction.UP: 
+                    char = '▲' 
+                case Direction.DOWN: 
+                    char = '▼'
+                case Direction.LEFT: 
+                    char = '◀'
+                case Direction.RIGHT: 
+                    char = '▶'
         case Block.PTAIL:
-              char = '|' if d in [Direction.UP, Direction.DOWN] else '-'
+              char = 'o' 
 
     return char
 
@@ -131,6 +163,7 @@ def empty_file(filename):
 
 def save_board_to_file(filename="screen.txt"):
     empty_file(filename)
+    MoveSnake()
     """
     Saves the current game board as text to a file.
     Appends a timestamp + blank line between frames for animation replay.
