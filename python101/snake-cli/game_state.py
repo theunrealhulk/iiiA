@@ -1,5 +1,7 @@
 from enum import Enum
 from utils import clear_console, empty_file
+import random
+
 import threading # Assuming this is used elsewhere as indicated by your lock
 
 class Block(Enum):
@@ -17,7 +19,7 @@ class Direction(Enum):
 
 # Global game state
 gameRunning: bool = False
-interval_secs: float = 0.3
+interval_secs: float = 0.2
 current_direction: Direction = Direction.RIGHT
 isGomeLost:bool = False
 isGameEnded:bool = False
@@ -58,19 +60,35 @@ snakeTrack =[
     [Direction.RIGHT,(10,3)]
 ]
 
+isFoodSpawned:bool=False
+
+def spawnFood():
+      # If food already exists on board → do nothing
+    for row in range(BOARD_HEIGHT):
+        for col in range(BOARD_WIDTH):
+            if board[row][col] == Block.FOOD:
+                return  # one food exists already
+
+    while True:
+        randomRaw = random.randint(1, BOARD_HEIGHT - 1)
+        randomCol = random.randint(1, BOARD_WIDTH - 1)
+        # Check the condition *after* running the body
+        if board[randomRaw][randomCol] == Block.EMPTY:
+            break
+    board[randomRaw][randomCol] = Block.FOOD
+    return True
+
 
 def MoveSnake():
-    global snakeTrack
+    global snakeTrack, isFoodSpawned, gameRunning, isGomeLost
 
-    # 0. CLEAR old snake from board BEFORE updating positions
-    for _, (row, col) in snakeTrack:
-        if board[row][col] in (Block.PTAIL, Block.PHEAD):
-            board[row][col] = Block.EMPTY
-
-    # 1. Get current head position
+    # 1. Get current head
     head_dir, (head_row, head_col) = snakeTrack[0]
 
-    # 2. Calculate new head position
+    # 2. Make sure one food exists
+    spawnFood()
+
+    # 3. Calculate new head position
     new_row, new_col = head_row, head_col
     match current_direction:
         case Direction.UP:    new_row -= 1
@@ -78,24 +96,41 @@ def MoveSnake():
         case Direction.LEFT:  new_col -= 1
         case Direction.RIGHT: new_col += 1
 
-    if board[new_row][new_col]==Block.WALL or board[new_row][new_col]==Block.PTAIL:
-        global gameRunning,isGomeLost
-        gameRunning=False
-        isGomeLost=True
+    # ✔ 4. COLLISION detection BEFORE clearing snake from board
+    if board[new_row][new_col] == Block.WALL:
+        gameRunning = False
+        isGomeLost = True
+        return
 
-    # 3. Insert new head
+    if board[new_row][new_col] == Block.PTAIL:
+        gameRunning = False
+        isGomeLost = True
+        return
+
+    # ✔ 5. Check if food eaten
+    ate_food = False
+    if board[new_row][new_col] == Block.FOOD:
+        ate_food = True
+        board[new_row][new_col] = Block.EMPTY
+        isFoodSpawned = False
+
+    # ✔ 6. CLEAR old snake AFTER collision checks
+    for _, (row, col) in snakeTrack:
+        board[row][col] = Block.EMPTY
+
+    # ✔ 7. Add new head
     snakeTrack.insert(0, [current_direction, (new_row, new_col)])
 
-    # 4. Remove tail (unless eating later)
-    snakeTrack.pop()
+    # ✔ 8. Pop tail unless growing
+    if not ate_food:
+        snakeTrack.pop()
 
-    # 5. DRAW the updated snake
+    # ✔ 9. Draw updated snake
     for i, (_, (row, col)) in enumerate(snakeTrack):
         if i == 0:
             board[row][col] = Block.PHEAD
         else:
             board[row][col] = Block.PTAIL
-    
 
         
 def getBlockChar(b:Block,d:Direction):
@@ -106,7 +141,7 @@ def getBlockChar(b:Block,d:Direction):
         case Block.WALL:
             char = '▓'
         case Block.FOOD:
-            char = '*' #🐁🐀🦎🐇🐦🐿️
+            char = '*'
         case Block.PHEAD:
             match d:
                 case Direction.UP: 
