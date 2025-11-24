@@ -6,9 +6,6 @@ from datetime import datetime
 
 print_lock = threading.Lock()
 
-
-
-
 def getch():
     if sys.platform.startswith("win"):
         import msvcrt
@@ -67,7 +64,7 @@ def clear_console():
 
 
 def main():
-    FPS = 42  # Target frames per second
+    FPS = 30  # Target frames per second
     frame_duration = 1.0 / FPS  # seconds per loop
 
     state = {"stop": False, "last_key": "None"}
