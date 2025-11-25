@@ -2,8 +2,9 @@ from textual.app import App
 
 
 class StopWatchApp(App):
-     BINDINGS = [
-        ("q", "quit", "Quit"),
+    # required for running the app from vscode
+    BINDINGS = [
+        ("q", "quit", "Quit"), #quit app with 'q' instead of 'CTRL+Q'
     ]
 
 
