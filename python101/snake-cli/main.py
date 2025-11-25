@@ -33,10 +33,9 @@ def runGame():
 
 def endGame():
     showToScreenText("ui/end.txt")
-    user_input = input("Please enter 's' or 'x': ")
-    while(user_input.lower()!='s' and user_input.lower()!='x'):
-        user_input=input ('invalid input type either "s" or x: ')
-
+    sleep(3)
+    startGame()
+    
 
 def update():
     with game_state.direction_lock:

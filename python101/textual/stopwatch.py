@@ -4,20 +4,32 @@ from textual.widgets import Header, Footer
 
 class StopWatchApp(App):
 
-    dark_mode = False  # track custom dark mode
 
     # required for running the app from vscode
     BINDINGS = [
         ("q", "quit", "Quit"), #quit app with 'q' instead of 'CTRL+Q'
-        ("d", "toggle_dark_mode", "toggle Dark Mode"), # d to switch between dark/white theme
+        ("d", "cycle_themes", "Theme: "), # d to switch between dark/white theme
     ]
+
+    def on_mount(self):
+        # Store available themes and current index
+        self.theme_names = list(self.available_themes.keys())
+        try:
+            self.theme_index = self.theme_names.index(self.theme)
+        except ValueError:
+            self.theme_index = 0
+        
 
     def compose(self):
         yield Header(show_clock=True)
         yield Footer()
 
-    def action_toggle_dark_mode(self):
-        self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light"
+    def action_cycle_themes(self):
+        self.theme = list(self.available_themes.keys())[self.theme_index]
+        self.theme_index+=1
+        if self.theme_index>= len(list(self.available_themes.keys())):
+            self.theme_index=0
+    
 
 
 if __name__=="__main__":
