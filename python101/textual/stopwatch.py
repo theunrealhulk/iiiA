@@ -1,4 +1,5 @@
 from textual.app import App
+from textual.widgets import Header, Footer
 
 
 class StopWatchApp(App):
@@ -6,6 +7,10 @@ class StopWatchApp(App):
     BINDINGS = [
         ("q", "quit", "Quit"), #quit app with 'q' instead of 'CTRL+Q'
     ]
+
+    def compose(self):
+        yield Header(show_clock=True)
+        yield Footer()
 
 
 
