@@ -1,0 +1,30 @@
+StopWatchCmp{
+    layout:horizontal;
+    background:$boost;
+    min-width: 50;
+    margin:1;
+    padding:1;
+    height: 5;
+}
+ 
+#Start{
+    dock:left;
+}
+
+#Stop{
+    dock:left;
+}
+
+#Reset{
+    dock:right;
+}
+
+TimeDisplay{
+    height: 3;
+    content-align:center middle;
+    text-opacity:60%;
+}
+
+.hidden{
+    display:none;
+}
