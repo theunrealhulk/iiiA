@@ -1,0 +1,13 @@
+Menu{
+    layout:horizontal;
+    margin:1;
+    padding:1;
+    background:$boost;
+}
+
+#deleteBtn{
+    dock:right;
+}
+.hidden{
+    display:none;
+}
