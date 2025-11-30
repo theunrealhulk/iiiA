@@ -1,7 +1,8 @@
-from textual.widgets import DataTable,Static
+from textual.containers import Container
+from textual.widgets import DataTable
 from itertools import cycle
 from data.utility import Utility
-class DataViewer(Static):
+class DataViewer(Container):
     cursors = cycle(["column", "row", "cell", "none"])
 
     def compose(self):
@@ -14,7 +15,8 @@ class DataViewer(Static):
         
         columns = list(data[0].keys())
         table = self.query_one(DataTable)
-        table.cursor_type = next(self.cursors)
+        table.focus() 
+        table.cursor_type = "row"
         table.zebra_stripes = True
         # 1. Get columns from first dict keys
         table.add_columns(*columns)

@@ -11,6 +11,9 @@ class CrudApp(App):
     BINDINGS = [
         ("q", "quit", "Quit"), #quit app with 'q' instead of 'CTRL+Q'
         ("d", "cycle_themes", "Theme: "), # d to switch between dark/white theme
+        ("n", "create", "New"), # d to switch between dark/white theme
+        ("u", "update_selected", "Updated Seleced"), # d to switch between dark/white theme
+        ("r", "delete_selected", "Delete Selected"), # d to switch between dark/white theme
     ]
     CSS_PATH="style.tcss"
     def on_mount(self):
@@ -19,7 +22,7 @@ class CrudApp(App):
         try:
             self.theme_index = self.theme_names.index(self.theme)
         except ValueError:
-            self.theme_index = 0
+            self.theme_index = 1
 
     def compose(self):
         yield Header(show_clock=True)
@@ -33,7 +36,12 @@ class CrudApp(App):
         if self.theme_index>= len(list(self.available_themes.keys())):
             self.theme_index=0
     
-
+    def action_create(self):
+        pass
+    def action_update_selected(self):
+        pass
+    def action_delete_selected(self):
+        pass
 
 if __name__=="__main__":
     CrudApp().run()
